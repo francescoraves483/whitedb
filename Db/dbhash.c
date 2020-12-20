@@ -673,7 +673,7 @@ static gint rehash_gint(gint val) {
   int i;
   wg_uint hash = FNV_offset_basis;
 
-  for(i=0; i<sizeof(gint); i++) {
+  for(i=0; i<(int) sizeof(gint); i++) {
     hash ^= ((unsigned char *) &val)[i];
     hash *= FNV_prime;
   }

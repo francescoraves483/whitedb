@@ -33,7 +33,9 @@ $(amal Db/dbschema.h)
 EOT
 
 cat << EOT > whitedb.c
-#include <whitedb.h>
+#include "whitedb.h"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 $(amal Db/crc1.h)
 
 $(amal json/yajl_all.c)
@@ -51,4 +53,5 @@ $(amal Db/dbmpool.c)
 $(amal Db/dbjson.c)
 $(amal Db/dbschema.c)
 $(amal Db/dblock.c)
+#pragma GCC diagnostic pop
 EOT

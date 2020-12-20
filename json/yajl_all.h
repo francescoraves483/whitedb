@@ -33,7 +33,7 @@ extern "C" {
 #define YA_FREE(afs, ptr) (afs)->free((afs)->ctx, (ptr))
 #define YA_REALLOC(afs, ptr, sz) (afs)->realloc((afs)->ctx, (ptr), (sz))
 
-static void yajl_set_default_alloc_funcs(yajl_alloc_funcs * yaf);
+void yajl_set_default_alloc_funcs(yajl_alloc_funcs * yaf);
 
 /*
  * Implementation/performance notes.  If this were moved to a header
@@ -49,22 +49,22 @@ static void yajl_set_default_alloc_funcs(yajl_alloc_funcs * yaf);
 typedef struct yajl_buf_t * yajl_buf;
 
 /* allocate a new buffer */
-static yajl_buf yajl_buf_alloc(yajl_alloc_funcs * alloc);
+yajl_buf yajl_buf_alloc(yajl_alloc_funcs * alloc);
 
 /* free the buffer */
-static void yajl_buf_free(yajl_buf buf);
+void yajl_buf_free(yajl_buf buf);
 
 /* append a number of bytes to the buffer */
-static void yajl_buf_append(yajl_buf buf, const void * data, size_t len);
+void yajl_buf_append(yajl_buf buf, const void * data, size_t len);
 
 /* empty the buffer */
-static void yajl_buf_clear(yajl_buf buf);
+void yajl_buf_clear(yajl_buf buf);
 
 /* get a pointer to the beginning of the buffer */
-static const unsigned char * yajl_buf_data(yajl_buf buf);
+const unsigned char * yajl_buf_data(yajl_buf buf);
 
 /* get the length of the buffer */
-static size_t yajl_buf_len(yajl_buf buf);
+size_t yajl_buf_len(yajl_buf buf);
 
 /*
  * A header only implementation of a simple stack of bytes, used in YAJL
@@ -113,16 +113,16 @@ typedef struct yajl_bytestack_t
     (obs).stack[((obs).used) - 1] = (byte);
 
 
-static void yajl_string_encode(const yajl_print_t printer,
+void yajl_string_encode(const yajl_print_t printer,
                         void * ctx,
                         const unsigned char * str,
                         size_t length,
                         int escape_solidus);
 
-static void yajl_string_decode(yajl_buf buf, const unsigned char * str,
+void yajl_string_decode(yajl_buf buf, const unsigned char * str,
                         size_t length);
 
-static int yajl_string_validate_utf8(const unsigned char * s, size_t len);
+int yajl_string_validate_utf8(const unsigned char * s, size_t len);
 
 
 typedef enum {
@@ -153,11 +153,11 @@ typedef enum {
 
 typedef struct yajl_lexer_t * yajl_lexer;
 
-static yajl_lexer yajl_lex_alloc(yajl_alloc_funcs * alloc,
+yajl_lexer yajl_lex_alloc(yajl_alloc_funcs * alloc,
                           unsigned int allowComments,
                           unsigned int validateUTF8);
 
-static void yajl_lex_free(yajl_lexer lexer);
+void yajl_lex_free(yajl_lexer lexer);
 
 /**
  * run/continue a lex. "offset" is an input/output parameter.
@@ -181,7 +181,7 @@ n * error messages.
  * implications which require that the client choose a reasonable chunk
  * size to get adequate performance.
  */
-static yajl_tok yajl_lex_lex(yajl_lexer lexer, const unsigned char * jsonText,
+yajl_tok yajl_lex_lex(yajl_lexer lexer, const unsigned char * jsonText,
                       size_t jsonTextLen, size_t * offset,
                       const unsigned char ** outBuf, size_t * outLen);
 
@@ -199,11 +199,11 @@ typedef enum {
     yajl_lex_unallowed_comment
 } yajl_lex_error;
 
-static const char * yajl_lex_error_to_string(yajl_lex_error error);
+const char * yajl_lex_error_to_string(yajl_lex_error error);
 
 /** allows access to more specific information about the lexical
  *  error when yajl_lex_lex returns yajl_tok_error. */
-static yajl_lex_error yajl_lex_get_error(yajl_lexer lexer);
+yajl_lex_error yajl_lex_get_error(yajl_lexer lexer);
 
 
 typedef enum {
@@ -241,20 +241,20 @@ struct yajl_handle_t {
     unsigned int flags;
 };
 
-static yajl_status
+yajl_status
 yajl_do_parse(yajl_handle handle, const unsigned char * jsonText,
               size_t jsonTextLen);
 
-static yajl_status
+yajl_status
 yajl_do_finish(yajl_handle handle);
 
-static unsigned char *
+unsigned char *
 yajl_render_error_string(yajl_handle hand, const unsigned char * jsonText,
                          size_t jsonTextLen, int verbose);
 
 /* A little built in integer parsing routine with the same semantics as strtol
  * that's unaffected by LOCALE. */
-static long long
+long long
 yajl_parse_integer(const unsigned char *number, unsigned int length);
 
 #ifdef __cplusplus

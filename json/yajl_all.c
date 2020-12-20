@@ -101,26 +101,26 @@ struct yajl_lexer_t {
 };
 
 
-static void * yajl_internal_malloc(void *ctx, size_t sz)
+void * yajl_internal_malloc(void *ctx, size_t sz)
 {
     (void)ctx;
     return malloc(sz);
 }
 
-static void * yajl_internal_realloc(void *ctx, void * previous,
+void * yajl_internal_realloc(void *ctx, void * previous,
                                     size_t sz)
 {
     (void)ctx;
     return realloc(previous, sz);
 }
 
-static void yajl_internal_free(void *ctx, void * ptr)
+void yajl_internal_free(void *ctx, void * ptr)
 {
     (void)ctx;
     free(ptr);
 }
 
-static void yajl_set_default_alloc_funcs(yajl_alloc_funcs * yaf)
+void yajl_set_default_alloc_funcs(yajl_alloc_funcs * yaf)
 {
     yaf->malloc = yajl_internal_malloc;
     yaf->free = yajl_internal_free;
@@ -128,7 +128,7 @@ static void yajl_set_default_alloc_funcs(yajl_alloc_funcs * yaf)
     yaf->ctx = NULL;
 }
 
-static
+
 void yajl_buf_ensure_available(yajl_buf buf, size_t want)
 {
     size_t need;
@@ -152,7 +152,7 @@ void yajl_buf_ensure_available(yajl_buf buf, size_t want)
     }
 }
 
-static yajl_buf yajl_buf_alloc(yajl_alloc_funcs * alloc)
+yajl_buf yajl_buf_alloc(yajl_alloc_funcs * alloc)
 {
     yajl_buf b = YA_MALLOC(alloc, sizeof(struct yajl_buf_t));
     memset((void *) b, 0, sizeof(struct yajl_buf_t));
@@ -160,14 +160,14 @@ static yajl_buf yajl_buf_alloc(yajl_alloc_funcs * alloc)
     return b;
 }
 
-static void yajl_buf_free(yajl_buf buf)
+void yajl_buf_free(yajl_buf buf)
 {
     assert(buf != NULL);
     if (buf->data) YA_FREE(buf->alloc, buf->data);
     YA_FREE(buf->alloc, buf);
 }
 
-static void yajl_buf_append(yajl_buf buf, const void * data, size_t len)
+void yajl_buf_append(yajl_buf buf, const void * data, size_t len)
 {
     yajl_buf_ensure_available(buf, len);
     if (len > 0) {
@@ -178,18 +178,18 @@ static void yajl_buf_append(yajl_buf buf, const void * data, size_t len)
     }
 }
 
-static void yajl_buf_clear(yajl_buf buf)
+void yajl_buf_clear(yajl_buf buf)
 {
     buf->used = 0;
     if (buf->data) buf->data[buf->used] = 0;
 }
 
-static const unsigned char * yajl_buf_data(yajl_buf buf)
+const unsigned char * yajl_buf_data(yajl_buf buf)
 {
     return buf->data;
 }
 
-static size_t yajl_buf_len(yajl_buf buf)
+size_t yajl_buf_len(yajl_buf buf)
 {
     return buf->used;
 }
@@ -350,7 +350,7 @@ static void CharToHex(unsigned char c, char * hexBuf)
     hexBuf[1] = hexchar[c & 0x0F];
 }
 
-static void
+void
 yajl_string_encode(const yajl_print_t print,
                    void * ctx,
                    const unsigned char * str,
@@ -435,7 +435,7 @@ static void Utf32toUtf8(unsigned int codepoint, char * utf8Buf)
     }
 }
 
-static void yajl_string_decode(yajl_buf buf, const unsigned char * str,
+void yajl_string_decode(yajl_buf buf, const unsigned char * str,
                         size_t len)
 {
     size_t beg = 0;
@@ -501,7 +501,7 @@ static void yajl_string_decode(yajl_buf buf, const unsigned char * str,
 
 #define ADV_PTR s++; if (!(len--)) return 0;
 
-static int yajl_string_validate_utf8(const unsigned char * s, size_t len)
+int yajl_string_validate_utf8(const unsigned char * s, size_t len)
 {
     if (!len) return 1;
     if (!s) return 0;
@@ -902,7 +902,7 @@ tokToStr(yajl_tok tok)
 
 #define unreadChar(lxr, off) ((*(off) > 0) ? (*(off))-- : ((lxr)->bufOff--))
 
-static yajl_lexer
+yajl_lexer
 yajl_lex_alloc(yajl_alloc_funcs * alloc,
                unsigned int allowComments, unsigned int validateUTF8)
 {
@@ -915,7 +915,7 @@ yajl_lex_alloc(yajl_alloc_funcs * alloc,
     return lxr;
 }
 
-static void
+void
 yajl_lex_free(yajl_lexer lxr)
 {
     yajl_buf_free(lxr->buf);
@@ -1297,7 +1297,7 @@ yajl_lex_comment(yajl_lexer lexer, const unsigned char * jsonText,
     return tok;
 }
 
-static yajl_tok
+yajl_tok
 yajl_lex_lex(yajl_lexer lexer, const unsigned char * jsonText,
              size_t jsonTextLen, size_t * offset,
              const unsigned char ** outBuf, size_t * outLen)
@@ -1489,7 +1489,7 @@ yajl_lex_lex(yajl_lexer lexer, const unsigned char * jsonText,
     return tok;
 }
 
-static const char *
+const char *
 yajl_lex_error_to_string(yajl_lex_error error)
 {
     switch (error) {
@@ -1527,7 +1527,7 @@ yajl_lex_error_to_string(yajl_lex_error error)
 
 /** allows access to more specific information about the lexical
  *  error when yajl_lex_lex returns yajl_tok_error. */
-static yajl_lex_error
+yajl_lex_error
 yajl_lex_get_error(yajl_lexer lexer)
 {
     if (lexer == NULL) return (yajl_lex_error) -1;
@@ -1537,7 +1537,7 @@ yajl_lex_get_error(yajl_lexer lexer)
 #define MAX_VALUE_TO_MULTIPLY ((LLONG_MAX / 10) + (LLONG_MAX % 10))
 
  /* same semantics as strtol */
-static long long
+long long
 yajl_parse_integer(const unsigned char *number, unsigned int length)
 {
     long long ret  = 0;
@@ -1566,7 +1566,7 @@ yajl_parse_integer(const unsigned char *number, unsigned int length)
     return sign * ret;
 }
 
-static unsigned char *
+unsigned char *
 yajl_render_error_string(yajl_handle hand, const unsigned char * jsonText,
                          size_t jsonTextLen, int verbose)
 {
@@ -1680,7 +1680,7 @@ yajl_render_error_string(yajl_handle hand, const unsigned char * jsonText,
     }
 
 
-static yajl_status
+yajl_status
 yajl_do_finish(yajl_handle hand)
 {
     yajl_status stat;
@@ -1707,7 +1707,7 @@ yajl_do_finish(yajl_handle hand)
     }
 }
 
-static yajl_status
+yajl_status
 yajl_do_parse(yajl_handle hand, const unsigned char * jsonText,
               size_t jsonTextLen)
 {
